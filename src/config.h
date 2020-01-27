@@ -1,0 +1,1 @@
+#define LIBPERL "libperl.a"

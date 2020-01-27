@@ -1,0 +1,36 @@
+{
+  "name": "perl-api",
+  "version": "0.0.1",
+  "description": "embed Perl into NodeJS",
+  "main": "index.js",
+  "gypfile": true,
+  "scripts": {
+    "lint": "eslint .",
+    "test": "jest .",
+    "build": "node-gyp rebuild",
+    "install": "node-gyp clean ; node-gyp configure build",
+    "debug": "node-gyp clean ; node-gyp configure build --debug",
+    "clean": "node-gyp clean"
+  },
+  "keywords": [
+    "perl"
+  ],
+  "author": "Rodrigo de Oliveira Gonzalez",
+  "license": "MIT",
+  "devDependencies": {
+    "node-gyp": "^6.1.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/rodrigolive/perl-api.git"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "engines": {
+    "node": ">=10.x"
+  },
+  "dependencies": {
+    "node-addon-api": "^2.0.0"
+  }
+}
