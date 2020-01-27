@@ -2,6 +2,14 @@
 
 Call Perl from NodeJS.
 
+This module embeds a Perl interpreter into NodeJS.
+
+To install:
+
+    npm install perl-api
+
+Example:
+
     const perl = require('perl-api');
     const api = new perl.PerlApi();
     const x = api.evaluate("my $x = 1 + 1");

@@ -1,4 +1,4 @@
-const np = require('./build/Release/perlapi.node');
+const np = require('../build/Release/perlapi.node');
 const assert = require('assert');
 
 /*
@@ -16,7 +16,7 @@ console.log('Testing class initial value for derived instance');
 console.log(newFromExisting.getValue());
 */
 
-const perl = new np.NodePerl();
+const perl = new np.PerlApi();
 
 perl.evaluate('print "Lets go perl!\n"');
 
@@ -39,7 +39,13 @@ var obj = perl.evaluate(`
 
 console.log(`Obj=`, obj);
 
-var foo = perl.evaluate(`$foo = sub { print "IN sub\nARGS=[@_]\n"; 123 }; $foo`);
+var foo = perl.evaluate(`
+    $foo = sub {
+        print "IN sub\nARGS=[@_]\n";
+        123
+    };
+    $foo;`);
+
 console.log(`Sub=`, foo);
 console.log(`Sub run=`, foo(11,22));
 

@@ -1,6 +1,6 @@
 #include "perlapi.h"
 
-Napi::Value NodePerl::PerlSub(const Napi::CallbackInfo& info) {
+Napi::Value PerlApi::PerlSub(const Napi::CallbackInfo& info) {
     Napi::Env env = info.Env();
 
     SV *sub = (SV *) info.Data();
@@ -33,7 +33,7 @@ Napi::Value NodePerl::PerlSub(const Napi::CallbackInfo& info) {
     return Napi::Number::New(env, ret);
 }
 
-NodePerl::NodePerl(const Napi::CallbackInfo& info) : Napi::ObjectWrap<NodePerl>(info)  {
+PerlApi::PerlApi(const Napi::CallbackInfo& info) : Napi::ObjectWrap<PerlApi>(info)  {
     Napi::Env env = info.Env();
 
     int length = info.Length();
@@ -64,13 +64,13 @@ NodePerl::NodePerl(const Napi::CallbackInfo& info) : Napi::ObjectWrap<NodePerl>(
     this->my_perl = my_perl;
 }
 
-NodePerl::~NodePerl() {
+PerlApi::~PerlApi() {
     perl_destruct(this->my_perl);
     perl_free(this->my_perl);
     PERL_SYS_TERM();
 }
 
-Napi::Value NodePerl::perl2js(Napi::Env env, SV * sv) {
+Napi::Value PerlApi::perl2js(Napi::Env env, SV * sv) {
 
     // see xs-src/pack.c in msgpack-perl
     SvGETMAGIC(sv);
@@ -100,7 +100,7 @@ Napi::Value NodePerl::perl2js(Napi::Env env, SV * sv) {
     // TODO: Handle async.
 }
 
-Napi::Value NodePerl::Evaluate(const Napi::CallbackInfo& info) {
+Napi::Value PerlApi::Evaluate(const Napi::CallbackInfo& info) {
     Napi::Env env = info.Env();
 
     /*
@@ -116,7 +116,7 @@ Napi::Value NodePerl::Evaluate(const Napi::CallbackInfo& info) {
     return this->perl2js(env, val);
 }
 
-Napi::Value NodePerl::perl2js_rv(Napi::Env env, SV * rv) {
+Napi::Value PerlApi::perl2js_rv(Napi::Env env, SV * rv) {
     SV *sv = SvRV(rv);
     SvGETMAGIC(sv);
     svtype svt = (svtype)SvTYPE(sv);
@@ -126,7 +126,7 @@ Napi::Value NodePerl::perl2js_rv(Napi::Env env, SV * rv) {
         Napi::Value arg1 = Napi::External<void>::New(env, &my_perl);
         Napi::Value args[] = {arg0, arg1};
         return env.Undefined(); // XXX for now
-        //Napi::Object retval( Napi::New(env, NodePerlObject::constructor)->GetFunction()->NewInstance(2, args));
+        //Napi::Object retval( Napi::New(env, PerlApiObject::constructor)->GetFunction()->NewInstance(2, args));
         //return Napi::EscapableHandleScope(env).Escape(retval);
     } else if (svt == SVt_PVHV) {
         HV* hval = (HV*)sv;
@@ -154,7 +154,7 @@ Napi::Value NodePerl::perl2js_rv(Napi::Env env, SV * rv) {
         return Napi::EscapableHandleScope(env).Escape(retval);
     } else if (svt == SVt_PVCV) {
         CV* sub = (CV*) sv;
-        Napi::Function retval = Napi::Function::New(env, NodePerl::PerlFunc, NULL, sub );
+        Napi::Function retval = Napi::Function::New(env, PerlApi::PerlFunc, NULL, sub );
         return Napi::EscapableHandleScope(env).Escape(retval);
     } else if (svt < SVt_PVAV) {
         sv_dump(sv);
@@ -166,7 +166,7 @@ Napi::Value NodePerl::perl2js_rv(Napi::Env env, SV * rv) {
     }
 }
 
-Napi::Value NodePerl::PerlFunc(const Napi::CallbackInfo& info) {
+Napi::Value PerlApi::PerlFunc(const Napi::CallbackInfo& info) {
     Napi::Env env = info.Env();
 
     SV *sub = (SV *) info.Data();
@@ -199,18 +199,17 @@ Napi::Value NodePerl::PerlFunc(const Napi::CallbackInfo& info) {
     return Napi::Number::New(env, ret);
 }
 
-Napi::Object NodePerl::Init(Napi::Env env, Napi::Object exports) {
-    Napi::Function func = DefineClass(env, "NodePerl", {
-            InstanceMethod("evaluate", &NodePerl::Evaluate),
+Napi::Object PerlApi::Init(Napi::Env env, Napi::Object exports) {
+    Napi::Function func = DefineClass(env, "PerlApi", {
+            InstanceMethod("evaluate", &PerlApi::Evaluate),
             });
 
     constructor = Napi::Persistent(func);
     constructor.SuppressDestruct();
 
-    exports.Set("NodePerl", func);
+    exports.Set("PerlApi", func);
     return exports;
 }
 
 
-Napi::FunctionReference NodePerl::constructor;
-
+Napi::FunctionReference PerlApi::constructor;

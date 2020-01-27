@@ -1,5 +1,5 @@
 const np = require('../build/Release/perlapi.node');
-const perl = new np.NodePerl();
+const perl = new np.PerlApi();
 
 console.time('iterations');
 let t0 = new Date();
